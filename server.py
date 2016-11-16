@@ -20,6 +20,9 @@ class EchoHandler(socketserver.DatagramRequestHandler):
 
     def handle(self):
         
+        trying = 'SIP/2.0 100 Trying'
+        ring = 'SIP/2.0 180 Ring'
+        ack = 'SIP/2.0 200 OK'
         # Escribe dirección y puerto del cliente (de tupla client_address)
         self.wfile.write(b"Hemos recibido tu peticion")
         line = self.rfile.read()
@@ -27,7 +30,7 @@ class EchoHandler(socketserver.DatagramRequestHandler):
         datos = line.decode('utf-8').split()
         if datos[0] == 'INVITE':
             metodo = datos[1].split(':')[1]
-            print('SIP/2.0 100 Trying' + '\r\n' + 'SIP/2.0 180 Ring')
+            print(trying + '\r\n' + ring + '\r\n' + ack)
         elif datos[0] == 'BYE':
             metodo = datos[1].split(':')[1]
             print('SIP/2.0 400 Bad Request')
