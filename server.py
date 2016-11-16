@@ -8,9 +8,9 @@ import socketserver
 import sys
 
 ##EXCEPCION ESTAN BIEN/NO LOS ARGUMENTOS
-if not len(sys.argv) == 5:
+if not len(sys.argv) == 4:
     sys.exit("Usage: python3 server.py IP puerto fichero_audio")
-python3, _, ip, port, audio_file = sys.argv
+_, ip, port, audio_file = sys.argv
 port = int(port)
 
 class EchoHandler(socketserver.DatagramRequestHandler):
@@ -19,32 +19,23 @@ class EchoHandler(socketserver.DatagramRequestHandler):
     """
 
     def handle(self):
-        datos = self.rfile.read().decode('utf-8').split(' ')
+        
+        # Escribe dirección y puerto del cliente (de tupla client_address)
+        self.wfile.write(b"Hemos recibido tu peticion")
+        line = self.rfile.read()
+        print("El cliente nos manda ", line.decode('utf-8'))
+        datos = line.decode('utf-8').split()
         if datos[0] == 'INVITE':
             metodo = datos[1].split(':')[1]
             print('SIP/2.0 100 Trying' + '\r\n' + 'SIP/2.0 180 Ring')
-        else datos[0] == 'ACK':
-            metodo = datos[1].split(':')[1]
-            print('SIP/2.0 200 OK')
-        else datos[0] == 'BYE':
+        elif datos[0] == 'BYE':
             metodo = datos[1].split(':')[1]
             print('SIP/2.0 400 Bad Request')
-        elif
+        else:
             print('SIP/2.0 405 Method Not Allowed')
-
-        # Escribe dirección y puerto del cliente (de tupla client_address)
-        self.wfile.write(b"Hemos recibido tu peticion")
-        while 1:
-            # Leyendo línea a línea lo que nos envía el cliente
-            line = self.rfile.read()
-            print("El cliente nos manda " + line.decode('utf-8'))
-
-            # Si no hay más líneas salimos del bucle infinito
-            if not line:
-                break
 
 if __name__ == "__main__":
     # Creamos servidor de eco y escuchamos
-    serv = socketserver.UDPServer(('', 6001), EchoHandler)
+    serv = socketserver.UDPServer(('', port), EchoHandler)
     print("Listening...")
     serv.serve_forever()
