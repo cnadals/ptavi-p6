@@ -39,7 +39,7 @@ class EchoHandler(socketserver.DatagramRequestHandler):
             metodo = datos[1].split(':')[1]
             self.wfile.write(b'SIP/2.0 200 OK')
             # aEjecutar es un string con lo que se ha de ejecutar en la shell
-            aEjecutar = 'mp32rtp -i 127.0.0.1 -p 23032 < ' + audio_file
+            aEjecutar = './mp32rtp -i 127.0.0.1 -p 23032 < ' + audio_file
             print('Vamos a ejecutar', aEjecutar)
             os.system(aEjecutar)
         elif datos[0] != ('INVITE' and 'BYE' and 'ACK'):
