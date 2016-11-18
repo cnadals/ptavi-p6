@@ -24,18 +24,25 @@ class EchoHandler(socketserver.DatagramRequestHandler):
         ring = 'SIP/2.0 180 Ring'
         ack = 'SIP/2.0 200 OK'
         # Escribe dirección y puerto del cliente (de tupla client_address)
-        self.wfile.write(b"Hemos recibido tu peticion")
+        self.wfile.write(b"Hemos recibido tu peticion \r\n\r\n")
         line = self.rfile.read()
         print("El cliente nos manda ", line.decode('utf-8'))
         datos = line.decode('utf-8').split()
         if datos[0] == 'INVITE':
             metodo = datos[1].split(':')[1]
-            print(trying + '\r\n' + ring + '\r\n' + ack)
+            self.wfile.write(b'SIP/2.0 100 Trying \r\n\r\n')
+            self.wfile.write(b'SIP/2.0 180 Ring \r\n\r\n')
+            self.wfile.write(b'SIP/2.0 200 OK \r\n\r\n')
+            #print(trying + '\r\n' + ring + '\r\n' + ack)
         elif datos[0] == 'BYE':
             metodo = datos[1].split(':')[1]
-            print('SIP/2.0 400 Bad Request')
+            self.wfile.write(b'SIP/2.0 200 OK')
+            #print(ack)
+        elif datos[0] == 'ACK':
+            metodo = datos[1].split(':')[1]
+            self.wfile.write(b'SIP/2.0 200 OK')
         else:
-            print('SIP/2.0 405 Method Not Allowed')
+            self.wfile.write(b'SIP/2.0 405 Method Not Allowed')
 
 if __name__ == "__main__":
     # Creamos servidor de eco y escuchamos
