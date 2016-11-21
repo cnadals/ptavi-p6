@@ -33,7 +33,7 @@ class EchoHandler(socketserver.DatagramRequestHandler):
             self.wfile.write(b'SIP/2.0 200 OK \r\n\r\n')
         elif datos[0] == 'BYE':
             metodo = datos[1].split(':')[1]
-            self.wfile.write(b'SIP/2.0 200 OK')
+            self.wfile.write(b'SIP/2.0 200 OK \r\n\r\n')
         elif datos[0] == 'ACK':
             metodo = datos[1].split(':')[1]
             self.wfile.write(b'ACK')
