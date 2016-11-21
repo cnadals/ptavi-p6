@@ -13,9 +13,6 @@ metodo = sys.argv[1]
 direccion = sys.argv[2]
 port = int(direccion.split(':')[-1])
 direccion = direccion.split(':')[0]
-#print(metodo)
-#print(port)
-#print(direccion)
 
 #EXCEPCION ESTAN BIEN/NO LOS ARGUMENTOS
 if not len(sys.argv) == 3:
@@ -28,15 +25,17 @@ if metodo == 'INVITE':
 if metodo == 'BYE':
 	line = metodo + ' sip:' + direccion + ' SIP/2.0'
 	print('Enviando: ' + line)
-if metodo == 'ACK':
-	line = metodo + ' sip:' + direccion + ' SIP/2.0'
-	print('Enviando: ' + line)
+	
 my_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 my_socket.connect(('127.0.0.1', port))
 my_socket.send(bytes(line, 'utf-8') + b'\r\n')
 data = my_socket.recv(1024)
 
-print('Recibido -- ', data.decode('utf-8'))
+data = data.decode('utf-8').split(' ')
+if (data[2] == 'Trying' and data[5] == 'Ring' and data[8] == 'OK'):
+	line = 'ACK sip:' + direccion + ' SIP/2.0'
+	my_socket.send(bytes(line, 'utf-8') + b'\r\n')
+
 print('Terminando socket...')
 
 # Cerramos todo
