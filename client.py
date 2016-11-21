@@ -20,21 +20,21 @@ if not len(sys.argv) == 3:
 _, metodo, direccion = sys.argv
 
 if metodo == 'INVITE':
-	line = metodo + ' sip:' + direccion + ' SIP/2.0'
-	print('Enviando: ' + line)
+    line = metodo + ' sip:' + direccion + ' SIP/2.0'
+    print('Enviando: ' + line)
 if metodo == 'BYE':
-	line = metodo + ' sip:' + direccion + ' SIP/2.0'
-	print('Enviando: ' + line)
-	
+    line = metodo + ' sip:' + direccion + ' SIP/2.0'
+    print('Enviando: ' + line)
+
 my_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 my_socket.connect(('127.0.0.1', port))
-my_socket.send(bytes(line, 'utf-8') + b'\r\n')
+my_socket.send(bytes(line, 'utf-8') + b'\r\n\r\n')
 data = my_socket.recv(1024)
 
 data = data.decode('utf-8').split(' ')
 if (data[2] == 'Trying' and data[5] == 'Ring' and data[8] == 'OK'):
-	line = 'ACK sip:' + direccion + ' SIP/2.0'
-	my_socket.send(bytes(line, 'utf-8') + b'\r\n')
+    line = 'ACK sip:' + direccion + ' SIP/2.0'
+    my_socket.send(bytes(line, 'utf-8') + b'\r\n\r\n')
 
 print('Terminando socket...')
 
