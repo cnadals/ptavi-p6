@@ -23,7 +23,6 @@ class EchoHandler(socketserver.DatagramRequestHandler):
     def handle(self):
 
         # Escribe dirección y puerto del cliente (de tupla client_address)
-        self.wfile.write(b'Hemos recibido tu peticion \r\n\r\n')
         line = self.rfile.read()
         print('El cliente nos manda ', line.decode('utf-8'))
         datos = line.decode('utf-8').split()
@@ -37,11 +36,12 @@ class EchoHandler(socketserver.DatagramRequestHandler):
             self.wfile.write(b'SIP/2.0 200 OK')
         elif datos[0] == 'ACK':
             metodo = datos[1].split(':')[1]
-            self.wfile.write(b'SIP/2.0 200 OK')
+            self.wfile.write(b'ACK')
             # aEjecutar es un string con lo que se ha de ejecutar en la shell
             aEjecutar = './mp32rtp -i 127.0.0.1 -p 23032 < ' + audio_file
             print('Vamos a ejecutar', aEjecutar)
             os.system(aEjecutar)
+            print('Ha acabado la cancion')
         elif datos[0] != ('INVITE' and 'BYE' and 'ACK'):
             metodo = datos[1].split(':')[1]
             self.wfile.write(b'SIP/2.0 405 Method Not Allowed')
@@ -53,5 +53,5 @@ if __name__ == "__main__":
     if not os.path.exists(audio_file):
         sys.exit('El archivo ' + audio_file + ' no existe')
     serv = socketserver.UDPServer(('', port), EchoHandler)
-    print("Listening...")
+    print('Listening...')
     serv.serve_forever()
